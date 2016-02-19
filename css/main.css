@@ -45,3 +45,11 @@
 	background-color: #F78181;
 	padding: 1em;
 }
+
+.answerer{
+	list-style: none;
+}
+
+.user img{
+	vertical-align: top;
+}

@@ -90,5 +90,62 @@ $(document).ready( function() {
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
+
 	});
+
+	$(".inspiration-getter").submit(function(e){
+		e.preventDefault();
+
+		$(".results").html("");
+		var tags = $(this).find("input[name='answerers']").val();
+		getTopAnswerers(tags);
+	})
 });
+
+var getTopAnswerers = function(tags){
+	var request = {
+		site:"stackoverflow",
+	};
+	var s_url = "http://api.stackexchange.com/2.2/tags/"+ tags +"/top-answerers/"+"month"
+	console.log(s_url);
+	$.ajax({
+		url: s_url,
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+	})
+	.done(function(result){
+		console.log(result.items);
+
+		$.each(result.items, function(i, item){
+			var ans = showAnswerers(item);
+			$(".results").append(ans);
+		});
+	})
+	.fail(function(jqXHR, error){
+		var errorElem = showError(error);
+		$(".search-results").append(errorElem);
+	});
+}
+
+var showAnswerers = function(item){
+	var result = $(".templates .answerer").clone();
+
+	var nameElem = result.find(".user a");
+	nameElem.text(item.user.display_name);
+	nameElem.attr("href", item.user.link);
+
+	var profElem = result.find(".user img");
+	profElem.attr("src", item.user.profile_image);
+
+	var postElem = result.find(".postCnt span");
+	postElem.text("Total Post: " + item.post_count);
+
+	var scoreElem = result.find(".score span");
+	scoreElem.text("Score: " + item.score);
+
+	var repElem = result.find(".reputation span");
+	repElem.text("Reputation: " + item.user.reputation);
+
+	return result;
+}
